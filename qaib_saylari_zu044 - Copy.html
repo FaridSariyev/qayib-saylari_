@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qayıb Sayları</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    input[type="number"] { width: 60px; }
+    input[type="text"] { width: 100px; }
+    .password { margin-top: 20px; }
+    #edit-controls { display: none; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Qayıb Sayları</h1>
+
+  <div id="edit-controls">
+    <button onclick="saveData()">Yadda saxla</button><br><br>
+    <label for="subjects">Fənnləri redaktə edin:</label><br>
+    <input type="text" id="subject1" placeholder="Engineering Math" />
+    <input type="text" id="subject2" placeholder="Electric Engineering" />
+    <input type="text" id="subject3" placeholder="Engineering Mechanics" />
+    <input type="text" id="subject4" placeholder="Electronics" />
+    <input type="text" id="subject5" placeholder="Technical English" />
+    <input type="text" id="subject6" placeholder="Fundamentals of Programming" />
+    <input type="text" id="subject7" placeholder="History" />
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Ad Soyad</th>
+        <th id="sub1">Engineering Math</th>
+        <th id="sub2">Electric Engineering</th>
+        <th id="sub3">Engineering Mechanics</th>
+        <th id="sub4">Electronics</th>
+        <th id="sub5">Technical English</th>
+        <th id="sub6">Fundamentals of Programming</th>
+        <th id="sub7">History</th>
+      </tr>
+    </thead>
+    <tbody id="student-table"></tbody>
+  </table>
+
+  <div class="password">
+    <label for="password">Redaktə etmək üçün parol daxil edin:</label>
+    <input type="password" id="password" />
+    <button onclick="checkPassword()">Təsdiqlə</button>
+  </div>
+
+  <script>
+    const students = [
+      "Abdulzadə Kazım", "Adnaliyev Yusif", "Allahverdiyeva Mədinə", "Ayazov Tamerlan",
+      "Bədəlov İbrahim", "Əliyev Yusif", "Əsədov Əli", "Əsgərli Kənan", "Əzizli Ömər",
+      "Hacıquliyev Amin", "Həsənli Əli", "Hümbətova Nigar", "Hacıyev İsmayıl", "İsmayilov İzahat",
+      "Mədətov Timur", "Mehdiyev Səid", "Məmmədli Məhəmməd", "Məsməliyeva Gülüstan", "Mürşüdlü Vüqar",
+      "Müslümov Ülvi", "Osmanlı Bahadur", "Qasımov Vəli", "Qasımzadə Əziz", "Quliyeva Ləman",
+      "Qurbanov Ramiz", "Rzayev İlqar", "Salahlı Yusif", "Sarıyev Fərid", "Xudiyeva Leyla",
+      "Hashem Emad Omer Abdulrazzaq", "Shazad Adil Mohammad", "Qaid Mohammed Abdulrahman Ahmed Ali"
+    ];
+
+    function generateTable() {
+      const tbody = document.getElementById('student-table');
+      students.forEach((name, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${name}</td>` +
+          '<td><input type="number" min="0" id="engineeringMath' + index + '" value="' + getStoredData(index, 'engineeringMath') + '" disabled></td>' +
+          '<td><input type="number" min="0" id="electricEngineering' + index + '" value="' + getStoredData(index, 'electricEngineering') + '" disabled></td>' +
+          '<td><input type="number" min="0" id="engineeringMechanics' + index + '" value="' + getStoredData(index, 'engineeringMechanics') + '" disabled></td>' +
+          '<td><input type="number" min="0" id="electronics' + index + '" value="' + getStoredData(index, 'electronics') + '" disabled></td>' +
+          '<td><input type="number" min="0" id="technicalEnglish' + index + '" value="' + getStoredData(index, 'technicalEnglish') + '" disabled></td>' +
+          '<td><input type="number" min="0" id="fundamentalsOfProgramming' + index + '" value="' + getStoredData(index, 'fundamentalsOfProgramming') + '" disabled></td>' +
+          '<td><input type="number" min="0" id="history' + index + '" value="' + getStoredData(index, 'history') + '" disabled></td>';
+        tbody.appendChild(row);
+      });
+    }
+
+    function getStoredData(index, subject) {
+      const value = localStorage.getItem(`${subject}-${index}`);
+      return value ? value : '';
+    }
+
+    function storeData(index, subject, value) {
+      localStorage.setItem(`${subject}-${index}`, value);
+    }
+
+    function checkPassword() {
+      const passInput = document.getElementById('password').value;
+      if (passInput === 'azi044') {
+        document.querySelectorAll("input[type='number']").forEach(input => input.disabled = false);
+        document.getElementById('edit-controls').style.display = 'block';
+        loadSubjects();
+      } else {
+        alert('Parol yanlışdır!');
+      }
+    }
+
+    function loadSubjects() {
+      const subjects = [
+        'Engineering Math', 'Electric Engineering', 'Engineering Mechanics', 'Electronics', 
+        'Technical English', 'Fundamentals of Programming', 'History'
+      ];
+      subjects.forEach((subject, index) => {
+        const subjectInput = document.getElementById('subject' + (index + 1));
+        const stored = localStorage.getItem('subject' + (index + 1));
+        subjectInput.value = stored || subject;
+        document.getElementById('sub' + (index + 1)).textContent = stored || subject;
+
+        subjectInput.addEventListener('input', function() {
+          document.getElementById('sub' + (index + 1)).textContent = subjectInput.value;
+        });
+      });
+    }
+
+    function saveData() {
+      students.forEach((name, index) => {
+        storeData(index, 'engineeringMath', document.getElementById('engineeringMath' + index).value);
+        storeData(index, 'electricEngineering', document.getElementById('electricEngineering' + index).value);
+        storeData(index, 'engineeringMechanics', document.getElementById('engineeringMechanics' + index).value);
+        storeData(index, 'electronics', document.getElementById('electronics' + index).value);
+        storeData(index, 'technicalEnglish', document.getElementById('technicalEnglish' + index).value);
+        storeData(index, 'fundamentalsOfProgramming', document.getElementById('fundamentalsOfProgramming' + index).value);
+        storeData(index, 'history', document.getElementById('history' + index).value);
+      });
+
+      for (let i = 1; i <= 7; i++) {
+        const val = document.getElementById('subject' + i).value;
+        localStorage.setItem('subject' + i, val);
+        document.getElementById('sub' + i).textContent = val;
+      }
+
+      alert("Dəyişikliklər yadda saxlanıldı.");
+    }
+
+    generateTable();
+    loadSubjects();
+  </script>
+</body>
+</html>
